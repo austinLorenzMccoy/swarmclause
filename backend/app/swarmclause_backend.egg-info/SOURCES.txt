@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+setup.py
+app/swarmclause_backend.egg-info/PKG-INFO
+app/swarmclause_backend.egg-info/SOURCES.txt
+app/swarmclause_backend.egg-info/dependency_links.txt
+app/swarmclause_backend.egg-info/requires.txt
+app/swarmclause_backend.egg-info/top_level.txt
+tests/test_config.py
+tests/test_offers.py
+tests/test_sessions.py
+tests/test_simulation.py

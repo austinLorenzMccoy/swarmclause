@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swarmclause-backend"
+version = "0.1.0"
+description = "FastAPI backend for the SwarmClause negotiation platform"
+readme = "README.md"
+authors = [{ name = "SwarmClause" }]
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["hedera", "fastapi", "smart-contracts", "agents"]
+dependencies = [
+    "fastapi==0.110.0",
+    "uvicorn[standard]==0.27.1",
+    "sqlalchemy==2.0.25",
+    "pydantic==2.6.3",
+    "pydantic-settings==2.1.0",
+    "python-dotenv==1.0.1",
+    "httpx==0.25.2",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==8.1.1",
+    "pytest-cov==4.1.0",
+    "requests==2.32.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["app"]
+include = ["app*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov=tests --cov-report=term-missing"
+pythonpath = ["."]
