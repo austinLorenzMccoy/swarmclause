@@ -108,76 +108,42 @@ graph TD
 
 ---
 
-## 🛠️ Getting Started
+## � Quick Start (OpenClaw Agent Demo)
 
-### 📋 Prerequisites
+### Prerequisites
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=flat-square&logo=node.js&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python&logoColor=white)
-![Hedera](https://img.shields.io/badge/Hedera-Testnet-black?style=flat-square&logo=hedera&logoColor=white)
+![OpenClaw](https://img.shields.io/badge/OpenClaw-Installed-purple?style=flat-square&logo=hedera&logoColor=white)
 - Node.js 18+
-- Python 3.11+
-- Hedera account with testnet tokens
-- Groq API key
-- Supabase account
+- OpenClaw installed and running
+- Groq API key (for AI reasoning)
+- Supabase credentials (for real-time dashboard)
 
-### 1️⃣ Clone the Repository
+### 🤖 One-Command Demo Launch
 ```bash
+# Clone and setup
 git clone https://github.com/austinLorenzMccoy/swarmclause.git
 cd swarmclause
+
+# Launch complete agent ecosystem
+./demo.sh
 ```
 
-### 2️⃣ Backend Setup 🐍
+### 🎯 What Happens During Demo
+1. **🌐 OpenClaw Gateway Starts** - Agent network initialization
+2. **🤖 4 Agents Launch**:
+   - 2x Buyer Agents (seeking services)
+   - 2x Seller Agents (offering services)
+   - 1x Simulator Agent (risk assessment)
+   - 1x Mediator Agent (facilitating agreements)
+3. **🔄 Autonomous Negotiation** - Agents discover each other and negotiate via UCP
+4. **� Real-time Dashboard** - Watch all activity at `http://localhost:3000/agents`
+5. **⛓ Hedera Integration** - Smart contracts, HCS logging, HTS settlement
 
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Create environment file
-cp .env.example .env
-# Edit .env with your API keys and configuration
-
-# Start the backend server
-uvicorn app.main:app --reload --port 8001
-```
-
-### 3️⃣ Frontend Setup ⚛️
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env
-# Edit .env with your Supabase and API configuration
-
-# Start the development server
-npm run dev
-```
-
-### 4️⃣ Database Setup 🗄️
-
-1. Create a new Supabase project
-2. Run the `database.sql` script in the Supabase SQL editor
-3. Configure environment variables with your Supabase URL and anon key
-
-### 5️⃣ Hedera Setup ⛓️
-
-1. Create a Hedera testnet account
-2. Fund your account with testnet HBAR
-3. Deploy the smart contracts using the provided scripts:
-```bash
-cd scripts
-node deploy-contract.js
-node create-topic.js
-```
+### 📱 Demo URLs
+- **Agent Observer UI**: http://localhost:3000/agents
+- **OpenClaw Gateway**: http://127.0.0.1:18789
+- **Live Transcript**: http://localhost:3000#transcript
+- **Why Hedera**: http://localhost:3000#why-hedera
 
 ---
 

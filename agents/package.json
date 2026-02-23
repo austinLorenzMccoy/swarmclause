@@ -1,0 +1,33 @@
+{
+  "name": "swarmclause-agents",
+  "version": "1.0.0",
+  "description": "OpenClaw-enabled autonomous agents for SWARMCLAUSE negotiation platform",
+  "main": "agent-launcher.js",
+  "scripts": {
+    "start": "node agent-launcher.js",
+    "start:buyers": "node -e \"const {AgentLauncher} = require('./agent-launcher'); const launcher = new AgentLauncher(); launcher.launchBuyerAgents();\"",
+    "start:sellers": "node -e \"const {AgentLauncher} = require('./agent-launcher'); const launcher = new AgentLauncher(); launcher.launchSellerAgents();\"",
+    "start:simulator": "node -e \"const {AgentLauncher} = require('./agent-launcher'); const launcher = new AgentLauncher(); launcher.launchSimulatorAgent();\"",
+    "start:mediator": "node -e \"const {AgentLauncher} = require('./agent-launcher'); const launcher = new AgentLauncher(); launcher.launchMediatorAgent();\"",
+    "dev": "node agent-launcher.js",
+    "test": "node -e \"console.log('Testing agent connectivity...');\""
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.80.0",
+    "groq-sdk": "^0.3.0"
+  },
+  "keywords": [
+    "openclaw",
+    "agents",
+    "hedera",
+    "blockchain",
+    "negotiation",
+    "autonomous",
+    "ucp"
+  ],
+  "author": "SWARMCLAUSE",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

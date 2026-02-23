@@ -69,6 +69,7 @@ export function LandingNav() {
           <Link href="#how-it-works" className="text-sm text-muted-foreground transition-colors hover:text-foreground">How It Works</Link>
           <Link href="#transcript" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Live Transcript</Link>
           <Link href="#why-hedera" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Why Hedera</Link>
+          <Link href="/agents" className="text-sm text-muted-foreground transition-colors hover:text-foreground">🤖 Agents</Link>
         </nav>
 
         <div className="flex items-center gap-3">

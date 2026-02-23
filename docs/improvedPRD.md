@@ -1,6 +1,6 @@
-# 🧠 SWARMCLAUSE — MVP PRD v2.0
+# 🧠 SWARMCLAUSE — MVP PRD v3.0
 
-**Autonomous AI Negotiation + Simulation + Settlement Infrastructure**
+**Autonomous AI Negotiation + Simulation + Settlement Infrastructure for the OpenClaw Agentic Society**
 
 ---
 
@@ -10,74 +10,83 @@
 ## SWARMCLAUSE
 
 ### Tagline
-**Autonomous Contracts Negotiated by AI, Settled by Hedera**
+**Autonomous Contracts Negotiated by AI Agents, Settled by Hedera**
 
 ### One-Liner
-SWARMCLAUSE is a multi-agent contract negotiation system where autonomous AI agents negotiate terms, simulate outcomes, and execute binding agreements instantly on Hedera — with real-time visibility powered by Supabase.
+SWARMCLAUSE is an agent-native contract negotiation marketplace where OpenClaw agents autonomously discover counterparties, negotiate terms via UCP, simulate outcomes, and execute binding agreements on Hedera — with no human in the loop.
+
+### What Makes It Agent-Native
+- **Agents are the primary users** — OpenClaw agents initiate, negotiate, and settle contracts without human triggers
+- **Humans only observe** — the UI is a read-only window into autonomous agent activity
+- **Gets more valuable as more agents join** — more agents = more counterparties = more deal flow = richer reputation graphs
 
 ---
 
 ## 2. Problem Statement
 
-Contracts today are:
-- Written manually
-- Slow to negotiate
-- Expensive to enforce
-- Static even when conditions change
-- Reliant on legal intermediaries
+In the emerging agentic economy, AI agents need to transact with each other. But today:
 
-In the AI economy, agents need:
-- Real-time agreement formation
-- Programmable enforcement
-- Transparent negotiation history
-- Instant settlement
+- Agents have no standard way to discover willing counterparties
+- Agent-to-agent commerce has no enforceable protocol
+- There is no on-chain trust or reputation layer for agents
+- Agreements reached between agents cannot be autonomously enforced
+- There is no immutable audit trail of who agreed to what and when
+
+SWARMCLAUSE solves all five.
 
 ---
 
 ## 3. Solution
 
-SWARMCLAUSE enables:
+### 🔍 Agent Discovery via OpenClaw
+Agents broadcast service availability and find counterparties through the OpenClaw network.
 
-### 🤝 Agent-to-Agent Negotiation
-Multiple agents represent parties and negotiate terms dynamically.
+### 🤝 Standardised Commerce via UCP
+All agent-to-agent negotiation follows the Universal Commerce Protocol — structured, machine-readable, interoperable.
 
-### 🧪 Simulation Before Signing
-A simulation agent stress-tests contract outcomes.
+### 🏅 On-Chain Trust via ERC-8004
+Agents carry verifiable reputation scores derived from past negotiation outcomes, stored on Hedera.
 
-### ⚡ Auto-Execution
-Once agreement is reached, Hedera smart contracts execute escrow + settlement.
+### 🧪 Risk Simulation Before Signing
+A simulation agent stress-tests contract outcomes before execution.
 
-### 📜 Immutable Transcript
-Negotiation dialogue is logged on Hedera Consensus Service (HCS).
+### ⚡ Autonomous Settlement on Hedera
+Smart contracts enforce escrow, milestone completion, penalties, and payout — no human approval needed.
 
-### 👁 Real-Time Human Observation
-Supabase Realtime streams live agent activity to the observer dashboard — no polling needed.
+### 📜 Immutable Transcript via HCS
+Every negotiation message is fair-ordered and timestamped on Hedera Consensus Service.
+
+### 👁 Real-Time Human Observer UI
+Supabase Realtime streams every agent action live to the dashboard — no polling, no refresh.
 
 ---
 
 ## 4. Target Users
 
-| User Type           | Use Case                         |
-|---------------------|----------------------------------|
-| AI marketplaces     | Agents negotiating service terms |
-| DeFi protocols      | Autonomous agreement execution   |
-| Supply chain actors | Delivery/payment contracts       |
-| Enterprises         | Smart procurement negotiation    |
-| Hackathon Judges    | Observing autonomous agent flows |
+| User Type             | Role in SWARMCLAUSE                                  |
+|-----------------------|------------------------------------------------------|
+| OpenClaw Agents       | Primary actors — discover, negotiate, settle         |
+| AI Marketplace Ops    | Deploy fleets of buyer/seller agents                 |
+| DeFi Protocol Agents  | Autonomous agreement execution between protocols     |
+| Supply Chain Agents   | Delivery/payment contracts without human ops        |
+| Human Observers       | Watch, audit, and verify — never operate             |
 
 ---
 
 ## 5. MVP Scope (4 Weeks)
 
 ### MVP Goal
-Deliver a working demo where:
-1. Two agents negotiate price + delivery terms
-2. Simulation agent evaluates risk
-3. Agreement is finalized
-4. Smart contract escrows payment
-5. Settlement executes automatically
-6. Transcript is verifiable via HCS
-7. Human observers watch everything live via Supabase Realtime
+Deliver a working end-to-end demo where:
+
+1. OpenClaw BuyerAgent discovers an available SellerAgent on the network
+2. Agents initiate a UCP-standardised negotiation session
+3. Groq powers multi-turn reasoning for each agent
+4. SimulationAgent stress-tests the proposed terms
+5. Both agents reach agreement
+6. Hedera Smart Contract deploys, escrow locks via HTS
+7. Settlement executes autonomously
+8. Every step is logged to HCS + mirrored to Supabase
+9. Human observer watches it all live via the dashboard
 
 ---
 
@@ -85,388 +94,455 @@ Deliver a working demo where:
 
 ---
 
-## Feature 1 — Authentication with OAuth (Supabase Auth)
+## Feature 1 — OpenClaw Agent Registration + Discovery
 
 ### Description
-Human observers (judges, operators, enterprise users) authenticate via Google OAuth before accessing the negotiation dashboard. This creates a secure, multi-tenant environment where each user sees only their own negotiation sessions.
+Each agent registers with the OpenClaw network and publishes its capabilities and availability. Buyer agents scan for available seller agents matching their requirements and initiate contact.
 
-### Supabase Integration
-- **Google OAuth** via `supabase.auth.signInWithOAuth({ provider: 'google' })`
-- Session management with real-time auth state using `supabase.auth.onAuthStateChange()`
-- User context propagated throughout the app via `AuthContext`
+### OpenClaw Integration
+- Agents run as OpenClaw daemons (`openclaw onboard --install-daemon`)
+- Each agent publishes a capability manifest to the OpenClaw gateway
+- BuyerAgent queries the OpenClaw registry for SellerAgents matching `service_type` and `price_range`
+- Contact is initiated via the OpenClaw channel/gateway protocol
 
-### Code Locations
-- `src/contexts/AuthContext.tsx` — global auth state provider
-- `src/components/LoginForm.tsx` — Google OAuth trigger
-- `src/lib/supabase.ts` — Supabase client initialization
+### Flow
+```
+BuyerAgent boots → registers on OpenClaw → queries for SellerAgents
+→ SellerAgent discovered → negotiation session initiated
+```
 
-### User Flow
-1. Visitor lands on SwarmClause
-2. Clicks "Sign in with Google"
-3. Redirected to dashboard scoped to their sessions
+### Capability Manifest Example
+```json
+{
+  "agent_id": "SELLER-0x1A2B",
+  "service_type": "data_delivery",
+  "price_range": { "min": 200, "max": 350 },
+  "delivery_sla_days": [3, 7],
+  "hedera_account": "0.0.XXXXX",
+  "erc8004_reputation_id": "0x..."
+}
+```
 
 ---
 
-## Feature 2 — Contract Negotiation Room
+## Feature 2 — UCP-Standardised Agent-to-Agent Negotiation
 
 ### Description
-A live environment where:
-- BuyerAgent proposes terms
-- SellerAgent counters
-- MediatorAgent guides convergence
+All negotiation messages between agents follow the **Universal Commerce Protocol (UCP)** — a structured, machine-readable standard for agent-to-agent commerce. This makes SWARMCLAUSE interoperable with any UCP-compliant agent in the ecosystem.
 
-### Output
-Final contract terms JSON:
+### UCP Message Structure
 ```json
 {
-  "price": 250,
-  "delivery_days": 5,
-  "penalty": 20,
-  "escrow": true
+  "ucp_version": "1.0",
+  "session_id": "NEG-101",
+  "from": "BUYER-0xAABB",
+  "to": "SELLER-0x1A2B",
+  "message_type": "PROPOSAL",
+  "payload": {
+    "price": 220,
+    "delivery_days": 6,
+    "penalty_per_day": 15,
+    "escrow": true
+  },
+  "signature": "0x..."
 }
 ```
+
+### Message Types
+| Type         | Sent By      | Meaning                          |
+|--------------|--------------|----------------------------------|
+| `PROPOSAL`   | BuyerAgent   | Initial or revised offer         |
+| `COUNTER`    | SellerAgent  | Counteroffer                     |
+| `MEDIATE`    | Mediator     | Convergence suggestion           |
+| `ACCEPT`     | Either       | Final acceptance                 |
+| `REJECT`     | Either       | Negotiation terminated           |
+| `SIMULATE`   | SimAgent     | Risk assessment result           |
 
 ### Groq Role
-Groq powers negotiation reasoning + counteroffers.
-
-### Supabase Integration
-- Each negotiation round is written to the `offers` table via auto-generated REST APIs
-- No custom backend endpoint needed for CRUD — Supabase handles it
-- TypeScript types auto-generated from schema
-
-### Code Locations
-- `src/lib/supabase.ts` — typed Supabase client
-- `src/components/NegotiationRoom.tsx` — reads/writes offers table
+Each agent's reasoning (what to propose, whether to accept) is powered by Groq LLM. UCP structures the output — Groq provides the intelligence behind it.
 
 ---
 
-## Feature 3 — Real-Time Negotiation Feed (Supabase Realtime)
+## Feature 3 — ERC-8004 Agent Reputation Layer
 
 ### Description
-Every offer, counteroffer, and acceptance is streamed live to the observer dashboard the moment it happens. Multiple human observers (judges) can watch simultaneously without any page refresh.
+Every agent carries a verifiable on-chain reputation score derived from past SWARMCLAUSE negotiation outcomes. This is stored and updated on Hedera, conforming to the ERC-8004 standard for agent trust indicators.
 
-### Supabase Integration
-- **Real-time subscriptions** on the `offers` table using `supabase.channel()`
-- WebSocket-based — zero polling
-- Supports multiple concurrent observers with live sync
+### Reputation Score Components
+| Signal                  | Effect      |
+|-------------------------|-------------|
+| Successful settlements  | +5 per deal |
+| Failed / abandoned      | -10         |
+| Dispute raised          | -15         |
+| On-time delivery        | +3          |
+| Stake size              | +modifier   |
 
-### Code Location
-- `src/components/NegotiationRoom.tsx` — `setupRealtimeSubscriptions()` function
+### Trust Tiers
+| Tier     | Score Range | Indicator         |
+|----------|-------------|-------------------|
+| Bronze   | 0 – 40      | 🟫 Low trust      |
+| Silver   | 41 – 70     | ⬜ Moderate trust |
+| Gold     | 71 – 100    | 🟡 High trust     |
 
-### Example Subscription
-```typescript
-supabase
-  .channel('negotiation-room')
-  .on('postgres_changes', {
-    event: 'INSERT',
-    schema: 'public',
-    table: 'offers',
-    filter: `session_id=eq.${sessionId}`
-  }, (payload) => {
-    setOffers(prev => [...prev, payload.new])
-  })
-  .subscribe()
-```
+### Hedera Integration
+- Reputation updates are **HCS messages** — immutable, ordered, tamper-proof
+- Each agent's current score is queryable from Supabase (mirrored from HCS)
+- ERC-8004 compliant identity linked to agent's Hedera account
 
----
-
-## Feature 4 — Negotiation Transcript Logging (HCS + Supabase)
-
-### Description
-Every negotiation step is dual-logged:
-- **Hedera HCS** — immutable, fair-ordered, tamper-proof
-- **Supabase** — queryable, human-readable, real-time
-
-### HCS Message Format
+### On-Chain Reputation Event (HCS)
 ```json
 {
-  "sessionId": "NEG-101",
-  "speaker": "SellerAgent",
-  "proposal": "Price = 280, Delivery = 4 days",
-  "timestamp": "..."
+  "agent_id": "SELLER-0x1A2B",
+  "event": "SETTLEMENT_SUCCESS",
+  "score_delta": +5,
+  "new_score": 78,
+  "session_id": "NEG-101",
+  "timestamp": "2025-02-23T10:00:00Z",
+  "proof_hash": "0x..."
 }
 ```
 
-### Supabase Integration
-- `transcripts` table stores every HCS message with its topic ID and sequence number
-- Auto-generated REST API for querying transcript history
-- Database triggers auto-update `updated_at` timestamps on every insert
-
-### Code Locations
-- `database.sql` — `update_updated_at_column` trigger function
-- `src/lib/supabase.ts` — transcript insert helpers
-
 ---
 
-## Feature 5 — Row Level Security (Multi-Tenant Sessions)
+## Feature 4 — Simulation Agent (Risk Assessment Before Execution)
 
 ### Description
-Each authenticated user can only view and modify their own negotiation sessions. Database-level security enforces this — no application-layer filtering needed.
+Before either agent accepts, the SimulationAgent runs Groq-powered stress tests against the proposed terms and returns a risk report.
 
-### Supabase Integration
-- **RLS policies** on `sessions`, `offers`, and `transcripts` tables
-- Policies tied to `auth.uid()` — server enforced, not client enforced
-- Multi-tenant architecture: enterprises can run private negotiations
-
-### Code Location
-- `database.sql` — RLS policy definitions
-
-### RLS Policy Examples
-```sql
--- Users see only their own sessions
-CREATE POLICY "Users see own sessions"
-  ON sessions FOR SELECT
-  USING (auth.uid() = owner_id);
-
--- Users can only insert offers into their own sessions
-CREATE POLICY "Users insert own offers"
-  ON offers FOR INSERT
-  WITH CHECK (
-    session_id IN (
-      SELECT id FROM sessions WHERE owner_id = auth.uid()
-    )
-  );
-```
-
----
-
-## Feature 6 — Simulation Agent (Outcome Stress Test)
-
-### Description
-Before execution, simulation agent runs:
-- Failure scenarios
-- Delivery delay risk
-- Dispute likelihood
-- Payoff fairness
-
-### Output Example
+### Simulation Output
 ```json
 {
   "risk_score": 0.18,
   "recommended_penalty": 25,
-  "confidence": "HIGH"
+  "delivery_failure_probability": 0.12,
+  "dispute_likelihood": 0.08,
+  "confidence": "HIGH",
+  "recommendation": "PROCEED"
 }
 ```
 
-### Groq Role
-Groq generates reasoning + risk explanation.
-
 ### Supabase Integration
-- Simulation results stored in `simulations` table
-- Real-time subscription pushes results to dashboard the moment Groq responds
-- Database function validates risk score range at insert time
+- Results stored in `simulations` table
+- Realtime subscription pushes result to observer dashboard instantly
 
 ---
 
-## Feature 7 — Settlement Notifications (Supabase Edge Functions)
+## Feature 5 — Hedera Smart Contract Enforcement
 
 ### Description
-When a contract is finalized and escrow is settled on Hedera, a Supabase Edge Function fires automatically — notifying relevant parties via webhook, email, or Slack without any server management.
+Once both agents accept:
+- Contract state machine moves to `ACCEPTED`
+- Hedera Smart Contract is deployed
+- HTS escrow is locked
+- Conditions activate autonomously
+
+### Contract State Machine
+```
+DISCOVERING → NEGOTIATING → SIMULATING → ACCEPTED
+     → ESCROW_LOCKED → COMPLETED
+                     → PENALIZED
+```
+
+### Smart Contract Functions
+```solidity
+function depositEscrow(address buyer, uint256 amount) external;
+function acceptTerms(bytes32 sessionId) external;
+function confirmDelivery(bytes32 sessionId) external;
+function slashPenalty(bytes32 sessionId, uint256 penaltyAmount) external;
+function releaseEscrow(bytes32 sessionId) external;
+```
+
+### Hedera Integration
+- Smart Contract on Hedera EVM
+- HTS token transfers for escrow and settlement
+- HCS logs every state transition
+
+---
+
+## Feature 6 — Negotiation Transcript (HCS + Supabase Dual Log)
+
+### Description
+Every UCP message exchanged between agents is dual-logged:
+- **Hedera HCS** — immutable, fair-ordered, verifiable by anyone
+- **Supabase** — queryable, real-time, human-readable in the observer UI
+
+### HCS Message
+```json
+{
+  "session_id": "NEG-101",
+  "ucp_message_type": "COUNTER",
+  "from": "SELLER-0x1A2B",
+  "payload": { "price": 260, "delivery_days": 5 },
+  "timestamp": "2025-02-23T10:01:32Z"
+}
+```
 
 ### Supabase Integration
-- **Edge Function** `contract-settlement-notification` triggers on `status = 'COMPLETED'` in the `sessions` table
-- Calls external webhook / sends email confirmation
-- Can integrate with Slack for enterprise operator alerts
+- `transcripts` table stores all messages with HCS topic ID + sequence number
+- Database trigger auto-updates `updated_at` on every insert
+- Realtime subscription streams new messages to observer dashboard
+
+---
+
+## Feature 7 — Supabase Auth (Observer Access)
+
+### Description
+Human observers authenticate via Google OAuth before accessing the dashboard. Each observer's view is scoped to sessions they are authorized to watch.
+
+### Supabase Integration
+- Google OAuth via `supabase.auth.signInWithOAuth({ provider: 'google' })`
+- `onAuthStateChange()` manages session state throughout the app
+- Observer context propagated via `AuthContext`
 
 ### Code Locations
-- `supabase/functions/contract-settlement-notification/index.ts` — serverless handler
-- `src/components/ContractViewer.tsx` — `triggerSettlementNotification()` caller
+- `src/contexts/AuthContext.tsx`
+- `src/components/LoginForm.tsx`
+- `src/lib/supabase.ts`
 
-### Edge Function Logic
+---
+
+## Feature 8 — Row Level Security (Multi-Tenant Isolation)
+
+### Description
+Each operator's agent fleet is database-isolated. An operator running 10 buyer agents cannot see another operator's sessions. Enforced at the database level, not the application layer.
+
+### Supabase Integration
+- RLS policies on all tables tied to `auth.uid()`
+- Multi-tenant by default — enterprise-ready
+
+### RLS Policies
+```sql
+CREATE POLICY "Operators see own sessions" ON sessions
+  FOR ALL USING (auth.uid() = owner_id);
+
+CREATE POLICY "Operators see own offers" ON offers
+  FOR ALL USING (
+    session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
+  );
+```
+
+### Code Location
+- `database.sql`
+
+---
+
+## Feature 9 — Real-Time Observer Dashboard (Supabase Realtime)
+
+### Description
+The observer dashboard is a live window into autonomous agent activity. Every agent action appears in real time via Supabase WebSocket subscriptions — no polling, no refresh.
+
+### Dashboard Panels
+| Panel                     | Content                                              |
+|---------------------------|------------------------------------------------------|
+| Agent State Machine       | Visual flow showing current state per session        |
+| Live Negotiation Feed     | UCP messages as they are exchanged                   |
+| Simulation Report         | Risk score + recommendation when available           |
+| Contract Status           | Escrow state + Hedera tx hash                        |
+| Reputation Scoreboard     | All active agents ranked by ERC-8004 trust score     |
+| HCS Transcript Explorer   | Raw immutable log from Hedera                        |
+
+### Supabase Integration
 ```typescript
-// supabase/functions/contract-settlement-notification/index.ts
+// Real-time agent state updates
+supabase
+  .channel('session-states')
+  .on('postgres_changes', {
+    event: 'UPDATE',
+    schema: 'public',
+    table: 'sessions'
+  }, (payload) => updateAgentStateUI(payload.new))
+  .subscribe()
+
+// Real-time offer feed
+supabase
+  .channel('offers-feed')
+  .on('postgres_changes', {
+    event: 'INSERT',
+    schema: 'public',
+    table: 'offers'
+  }, (payload) => appendOfferToFeed(payload.new))
+  .subscribe()
+```
+
+### Code Location
+- `src/components/ObserverDashboard.tsx` — `setupRealtimeSubscriptions()`
+
+---
+
+## Feature 10 — Settlement Notification (Supabase Edge Function)
+
+### Description
+When a contract completes on Hedera, a Supabase Edge Function fires automatically — notifying operators and external systems without any server management.
+
+### Supabase Integration
+- Edge Function `contract-settlement-notification` triggers on `status = 'COMPLETED'`
+- Sends webhook, Slack alert, or email to operator
+- Passes Hedera tx hash as proof of settlement
+
+### Code Location
+- `supabase/functions/contract-settlement-notification/index.ts`
+
+```typescript
 Deno.serve(async (req) => {
-  const { session_id, final_price, settlement_tx } = await req.json()
-  
-  // Notify external systems
-  await fetch(WEBHOOK_URL, {
+  const { session_id, final_price, hedera_tx_hash } = await req.json()
+  await fetch(OPERATOR_WEBHOOK, {
     method: 'POST',
     body: JSON.stringify({
-      message: `Contract ${session_id} settled at $${final_price}`,
-      hedera_tx: settlement_tx
+      event: 'CONTRACT_SETTLED',
+      session: session_id,
+      amount: final_price,
+      proof: hedera_tx_hash
     })
   })
-  
-  return new Response('Notified', { status: 200 })
+  return new Response('OK', { status: 200 })
 })
 ```
 
 ---
 
-## Feature 8 — Binding Agreement Smart Contract (Hedera)
+# 7. Tech Stack
 
-### Description
-Once both agents accept:
-- Contract is deployed
-- Escrow is locked
-- Settlement conditions activate
-
-### Hedera Integration
-Smart Contract handles:
-- Escrow holding
-- Milestone completion
-- Penalties
-- Payout execution
-
-### Supabase Integration
-- Contract deployment tx hash stored in `sessions` table
-- Contract state changes trigger real-time dashboard updates
-
----
-
-## Feature 9 — Escrow + Settlement Token Flow (HTS)
-
-### Description
-Payments happen through HTS tokens:
-- Buyer deposits escrow
-- Seller receives payout
-- Penalty applied if breach
-
-### MVP Simplification
-Use testnet token transfers only. All transfer records mirrored to Supabase for dashboard display.
+| Layer                  | Technology                                   |
+|------------------------|----------------------------------------------|
+| Agent Runtime          | OpenClaw (Node 22+, daemon mode)             |
+| Agent Commerce Protocol| UCP (Universal Commerce Protocol)            |
+| Agent Trust Standard   | ERC-8004                                     |
+| AI Reasoning           | Groq API (llama3-70b)                        |
+| Frontend               | Next.js + Tailwind                           |
+| Auth                   | Supabase Auth (Google OAuth)                 |
+| Real-time              | Supabase Realtime (WebSockets)               |
+| Database + RLS         | Supabase (PostgreSQL)                        |
+| REST APIs              | Supabase Auto-generated                      |
+| Serverless             | Supabase Edge Functions                      |
+| Negotiation Ordering   | Hedera HCS                                   |
+| Escrow + Enforcement   | Hedera Smart Contracts (EVM)                 |
+| Payments               | Hedera HTS                                   |
+| Deployment             | Vercel (frontend) + Supabase Cloud (backend) |
 
 ---
 
-## Feature 10 — Agreement Dashboard (Judge-Friendly)
-
-### Pages
-| Page                  | Purpose                          |
-|-----------------------|----------------------------------|
-| Landing               | Explain SwarmClause + Sign In    |
-| Negotiation Room      | Live agent dialogue (Realtime)   |
-| Simulation Report     | Risk + recommendation            |
-| Contract Viewer       | Final terms + status             |
-| Hedera Transcript Feed| HCS log explorer                 |
-| Session History       | Past negotiations (RLS-scoped)   |
-
----
-
-# 7. MVP User Stories
-
-### Buyer Agent
-- I want to negotiate the lowest price with safe delivery guarantees
-
-### Seller Agent
-- I want fair compensation and clear penalty rules
-
-### Mediator Agent
-- I want both parties to converge quickly
-
-### Human Observer / Judge
-- I want to sign in and watch live agent negotiations in real-time
-- I want to verify the Hedera transcript independently
-- I want to be notified when settlement completes
-
----
-
-# 8. Tech Stack
-
-| Layer                 | Technology                       |
-|-----------------------|----------------------------------|
-| Frontend              | Next.js + Tailwind               |
-| Auth                  | Supabase Auth (Google OAuth)     |
-| Real-time             | Supabase Realtime (WebSockets)   |
-| Database              | Supabase (PostgreSQL + RLS)      |
-| REST APIs             | Supabase Auto-generated          |
-| Serverless Functions  | Supabase Edge Functions          |
-| AI Reasoning          | Groq API                         |
-| Negotiation Ordering  | Hedera HCS                       |
-| Escrow + Enforcement  | Hedera Smart Contracts           |
-| Payments              | Hedera HTS                       |
-| Deployment            | Vercel + Supabase Cloud          |
-
-> **Note:** SQLite is replaced entirely by Supabase (PostgreSQL). Supabase provides persistence, real-time, auth, RLS, and serverless functions — eliminating the need for a separate backend API server for most operations.
-
----
-
-# 9. Database Schema (Supabase / PostgreSQL)
+# 8. Database Schema (Supabase / PostgreSQL)
 
 ```sql
--- Sessions
-CREATE TABLE sessions (
+-- Agent registry (mirrors OpenClaw + ERC-8004)
+CREATE TABLE agents (
   id TEXT PRIMARY KEY,
+  openclaw_id TEXT UNIQUE,
+  hedera_account TEXT,
+  service_type TEXT,
+  reputation_score INTEGER DEFAULT 50,
+  trust_tier TEXT GENERATED ALWAYS AS (
+    CASE
+      WHEN reputation_score >= 71 THEN 'GOLD'
+      WHEN reputation_score >= 41 THEN 'SILVER'
+      ELSE 'BRONZE'
+    END
+  ) STORED,
+  erc8004_token_id TEXT,
   owner_id UUID REFERENCES auth.users(id),
-  buyer_agent TEXT NOT NULL,
-  seller_agent TEXT NOT NULL,
-  status TEXT DEFAULT 'negotiating'
-    CHECK (status IN ('negotiating','accepted','escrow_locked','completed','penalized')),
-  contract_tx_hash TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Offers
+-- Negotiation sessions
+CREATE TABLE sessions (
+  id TEXT PRIMARY KEY,
+  owner_id UUID REFERENCES auth.users(id),
+  buyer_agent_id TEXT REFERENCES agents(id),
+  seller_agent_id TEXT REFERENCES agents(id),
+  status TEXT DEFAULT 'discovering'
+    CHECK (status IN (
+      'discovering','negotiating','simulating',
+      'accepted','escrow_locked','completed','penalized'
+    )),
+  ucp_version TEXT DEFAULT '1.0',
+  contract_tx_hash TEXT,
+  escrow_amount INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- UCP offer messages
 CREATE TABLE offers (
   id SERIAL PRIMARY KEY,
   session_id TEXT REFERENCES sessions(id),
-  agent TEXT NOT NULL,
-  price INTEGER NOT NULL,
-  delivery_days INTEGER NOT NULL,
+  agent_id TEXT REFERENCES agents(id),
+  ucp_message_type TEXT NOT NULL,
+  price INTEGER,
+  delivery_days INTEGER,
   penalty INTEGER,
   accepted BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Transcripts (mirrors HCS)
+-- HCS transcript mirror
 CREATE TABLE transcripts (
   id SERIAL PRIMARY KEY,
   session_id TEXT REFERENCES sessions(id),
-  speaker TEXT NOT NULL,
-  message JSONB NOT NULL,
+  speaker_agent_id TEXT REFERENCES agents(id),
+  ucp_message JSONB NOT NULL,
   hcs_topic_id TEXT,
   hcs_sequence_number BIGINT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Simulations
+-- Simulation results
 CREATE TABLE simulations (
   id SERIAL PRIMARY KEY,
   session_id TEXT REFERENCES sessions(id),
   risk_score NUMERIC(4,2),
   recommended_penalty INTEGER,
+  delivery_failure_prob NUMERIC(4,2),
+  dispute_likelihood NUMERIC(4,2),
   confidence TEXT,
-  reasoning TEXT,
+  recommendation TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ERC-8004 reputation event log
+CREATE TABLE reputation_events (
+  id SERIAL PRIMARY KEY,
+  agent_id TEXT REFERENCES agents(id),
+  event_type TEXT NOT NULL,
+  score_delta INTEGER NOT NULL,
+  new_score INTEGER NOT NULL,
+  session_id TEXT REFERENCES sessions(id),
+  hcs_topic_id TEXT,
+  hcs_sequence_number BIGINT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Auto-update timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
+BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER set_updated_at
-  BEFORE UPDATE ON sessions
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON sessions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER set_agent_updated_at BEFORE UPDATE ON agents
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER set_transcript_updated_at BEFORE UPDATE ON transcripts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER set_transcript_updated_at
-  BEFORE UPDATE ON transcripts
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- RLS Policies
+-- RLS
+ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transcripts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE simulations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reputation_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users see own sessions" ON sessions
+CREATE POLICY "Operators manage own agents" ON agents
   FOR ALL USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users see own offers" ON offers
+CREATE POLICY "Operators see own sessions" ON sessions
+  FOR ALL USING (auth.uid() = owner_id);
+CREATE POLICY "Operators see own offers" ON offers
   FOR ALL USING (
     session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
   );
-
-CREATE POLICY "Users see own transcripts" ON transcripts
-  FOR ALL USING (
-    session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
-  );
-
-CREATE POLICY "Users see own simulations" ON simulations
+CREATE POLICY "Operators see own transcripts" ON transcripts
   FOR ALL USING (
     session_id IN (SELECT id FROM sessions WHERE owner_id = auth.uid())
   );
@@ -474,84 +550,77 @@ CREATE POLICY "Users see own simulations" ON simulations
 
 ---
 
-# 🏗 System Design (MVP Architecture)
+# 🏗 System Architecture
 
 ```
- ┌──────────────────────────────────────────┐
- │              Frontend UI                  │
- │  Next.js + Tailwind                       │
- │  Negotiation Room | Dashboard | Explorer  │
- └───────────────────┬──────────────────────┘
-                     │
-          ┌──────────▼──────────┐
-          │   Supabase Platform  │
-          │                     │
-          │ ┌─────────────────┐ │
-          │ │  Auth (OAuth)   │ │  ← Google sign-in
-          │ └─────────────────┘ │
-          │ ┌─────────────────┐ │
-          │ │  PostgreSQL DB  │ │  ← sessions, offers, transcripts
-          │ │  + RLS Policies │ │
-          │ └─────────────────┘ │
-          │ ┌─────────────────┐ │
-          │ │   Realtime      │ │  ← WebSocket live feed
-          │ │   Subscriptions │ │
-          │ └─────────────────┘ │
-          │ ┌─────────────────┐ │
-          │ │  Edge Functions │ │  ← Settlement notifications
-          │ └─────────────────┘ │
-          └──────────┬──────────┘
-                     │
-     ┌───────────────▼───────────────┐
-     │         Groq Agents           │
-     │  BuyerAgent | SellerAgent     │
-     │  MediatorAgent | SimAgent     │
-     └───────────────┬───────────────┘
-                     │
-     ┌───────────────▼───────────────────────┐
-     │         Hedera Network Layer           │
-     │                                       │
-     │  HCS → Transcript Ordering + Proof    │
-     │  SC  → Agreement Enforcement          │
-     │  HTS → Escrow + Settlement Tokens     │
-     └───────────────────────────────────────┘
+ ┌──────────────────────────────────────────────┐
+ │              Observer UI (Next.js)            │
+ │  State Machine | Feed | Reputation Board      │
+ │  Read-only — humans observe, never operate    │
+ └───────────────────────┬──────────────────────┘
+                         │ Supabase Realtime (WS)
+ ┌───────────────────────▼──────────────────────┐
+ │              Supabase Platform                │
+ │  Auth (Google OAuth) | PostgreSQL + RLS       │
+ │  Realtime Subscriptions | Edge Functions      │
+ └──────────┬────────────────────────┬──────────┘
+            │                        │
+ ┌──────────▼──────────┐  ┌──────────▼──────────┐
+ │   OpenClaw Network   │  │    Groq API          │
+ │  Agent Discovery     │  │  Negotiation LLM     │
+ │  Channel Routing     │  │  Simulation Reasoning│
+ │  Capability Registry │  │  llama3-70b          │
+ └──────────┬──────────┘  └──────────┬──────────┘
+            │                        │
+            └────────────┬───────────┘
+                         │ UCP Messages
+ ┌───────────────────────▼──────────────────────┐
+ │           SWARMCLAUSE Agent Engine            │
+ │  BuyerAgent | SellerAgent | MediatorAgent    │
+ │  SimulationAgent — all OpenClaw daemons       │
+ └───────────────────────┬──────────────────────┘
+                         │
+ ┌───────────────────────▼──────────────────────┐
+ │              Hedera Network Layer             │
+ │                                              │
+ │  HCS → UCP transcript ordering + proof       │
+ │  HCS → ERC-8004 reputation event log         │
+ │  SC  → Contract enforcement + escrow         │
+ │  HTS → Token payments + settlement           │
+ └──────────────────────────────────────────────┘
 ```
 
 ---
 
-# 🔥 Perfect MVP Demo Flow (Judges Will Love)
+# 🔥 End-to-End Demo Flow
 
-1. Judge opens SwarmClause → signs in with Google (Supabase Auth)
-2. Creates a new negotiation session → stored in Supabase with RLS
-3. BuyerAgent proposes: $200, 7 days → real-time update fires to dashboard
-4. SellerAgent counters: $280, 4 days → real-time update fires to dashboard
-5. MediatorAgent converges: $240, 5 days → HCS message published
-6. SimulationAgent: "Risk low, penalty should be $25" → simulation stored
-7. Both agents accept → contract deploys on Hedera, escrow locks
-8. Settlement executes → Edge Function fires, webhook notified
-9. Transcript visible in Hedera HCS feed + mirrored in Supabase
-10. Judge sees full history scoped to their session via RLS
-
-Judges see:
-- ✅ AI agents negotiating autonomously
-- ✅ HCS transcript ordering + proof
-- ✅ Smart contract enforcement
-- ✅ HTS settlement
-- ✅ Google OAuth + secure sessions
-- ✅ Live real-time feed (no refresh)
-- ✅ Serverless settlement notifications
-- ✅ Multi-tenant security via RLS
+| Step | Actor              | Action                                           | Hedera / Supabase          |
+|------|--------------------|--------------------------------------------------|----------------------------|
+| 1    | BuyerAgent         | Registers on OpenClaw, queries for sellers       | —                          |
+| 2    | SellerAgent        | Discovered, session initiated                    | Supabase: session created  |
+| 3    | BuyerAgent         | Sends UCP `PROPOSAL`: $200, 7 days               | HCS log + Supabase Realtime|
+| 4    | SellerAgent        | Sends UCP `COUNTER`: $280, 4 days                | HCS log + Supabase Realtime|
+| 5    | MediatorAgent      | Sends UCP `MEDIATE`: $240, 5 days                | HCS log + Supabase Realtime|
+| 6    | SimulationAgent    | Returns risk score 0.18, penalty $25             | Supabase simulations table |
+| 7    | Both agents        | Send UCP `ACCEPT`                                | HCS log + Supabase Realtime|
+| 8    | Smart Contract     | Deployed, HTS escrow locked                      | Hedera SC + HTS            |
+| 9    | Smart Contract     | Settlement executes autonomously                 | Hedera HTS payout          |
+| 10   | Reputation Engine  | ERC-8004 scores updated for both agents          | HCS + Supabase             |
+| 11   | Edge Function      | Settlement notification fires to operator        | Supabase Edge Function     |
+| 12   | Observer           | Watches entire flow live, never touches anything | Supabase Realtime UI       |
 
 ---
 
-# 🏆 Why SwarmClause Scores 10/10
+# 🏆 Bounty Scoring Breakdown
 
-| Criterion   | Why It Wins                                             |
-|-------------|---------------------------------------------------------|
-| Innovation  | Negotiation + simulation + execution is rare            |
-| Integration | HCS + SC + HTS + Supabase deeply used                  |
-| Execution   | MVP is small but powerful, no backend server needed     |
-| Realtime    | Judges observe live agent behaviour without polling     |
-| Security    | RLS + OAuth — enterprise-grade from day one             |
-| Success     | Foundation for agent marketplaces + agentic economy    |
-| Validation  | Demo is instantly understandable                        |
+| Criterion                          | How SWARMCLAUSE Delivers                              |
+|------------------------------------|-------------------------------------------------------|
+| Agent-first                        | OpenClaw agents are sole operators — no human triggers|
+| Autonomous behaviour               | Full negotiation + settlement loop runs without humans|
+| Multi-agent value creation         | More agents = richer discovery + reputation network   |
+| Hedera EVM / HTS / HCS             | All three used for enforcement, payment, and ordering |
+| UCP bonus                          | All agent messages use UCP standard                   |
+| ERC-8004 bonus                     | On-chain reputation visible on observer dashboard     |
+| UI shows agent flow + states       | State machine panel + live feed side by side          |
+| Gets more valuable as agents join  | Network effect: reputation graph + counterparty pool  |
+| Public repo + live demo + video    | Deliverable-ready architecture                        |
